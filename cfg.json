@@ -3,7 +3,8 @@
     "root":{
       "src": "src/",
       "dev": "_dev/",
-      "dist": "_dist/"
+      "rc": "_rc/",
+      "production": "_production/"
     },
     "type": {
   	  "source": {

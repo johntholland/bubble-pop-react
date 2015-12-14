@@ -11,24 +11,22 @@ var nib = require('nib');
 var cfg = require('./cfg.json');
 var gulputil = require('./gulputil.js');
 
-var buildActions = function (isDevelopment) {
-  isDevelopment = isDevelopment !== false;
-  var root = isDevelopment ? cfg.dir.root.dev : cfg.dir.root.dist;
+var buildActions = function (environment) {
 
-  var jsAppFilename = isDevelopment ? 'app.js' : gulputil.buildCacheBusterString(10) + '.js';
-  var jsLibFilename = isDevelopment ? 'lib.js' : gulputil.buildCacheBusterString(8) + '.js';
+  var jsAppFilename = environment === 'dev' ? 'app.js' : gulputil.buildCacheBusterString(10) + '.js';
+  var jsLibFilename = environment === 'dev' ? 'lib.js' : gulputil.buildCacheBusterString(8) + '.js';
 
-  var paths = gulputil.buildPaths(cfg, isDevelopment);
+  var paths = gulputil.buildPaths(cfg, environment);
 
   return {
     clean: function () {
-      return del(['./' + root]);
+      return del([paths.root]);
     },
     concatLibs: function () {
       gulp.src(cfg.bowerLibraryFilePaths)
         .pipe(uglify())
         .pipe(concat(jsLibFilename))
-        .pipe(gulp.dest(paths.js + jsLibFilename));
+        .pipe(gulp.dest(paths.js));
     },
     scripts: function () {
       var b = browserify({
@@ -43,12 +41,12 @@ var buildActions = function (isDevelopment) {
           this.emit('end');
         })
         .pipe(source(jsAppFilename))
-        .pipe(gulp.dest(paths.js + jsAppFilename));
+        .pipe(gulp.dest(paths.js));
     },
     styles: function () {
       gulp.src(paths.styles + '[!_]*.styl')
         .pipe(stylus({use: [nib()]}))
-        .pipe(gulp.dest(paths.css);
+        .pipe(gulp.dest(paths.css));
     },
     views: function () {
       gulp.src(paths.views + '[!_]*.jade')
@@ -64,14 +62,15 @@ var buildActions = function (isDevelopment) {
       //   .pipe(gulp.dest('./' + root + cfg.dir.type.destination.html));
     },
     resources: function () {
-      gulp.src(['./', cfg.dir.root.src, cfg.dir.type.source.resources, '*.*'].join(''))
-        .pipe(gulp.dest('./' + root + cfg.dir.type.destination.resources));
+      // gulp.src(['./', cfg.dir.root.src, cfg.dir.type.source.resources, '*.*'].join(''))
+      //   .pipe(gulp.dest('./' + root + cfg.dir.type.destination.resources));
     }
   }
 };
 
-var devActions = buildActions(true);
-var distActions = buildActions(false);
+var devActions = buildActions('dev');
+var rcActions = buildActions('rc');
+var prodActions = buildActions('production');
 
 gulp.task('clean:dev', devActions.clean);
 gulp.task('libs:dev', ['clean:dev'], devActions.concatLibs);
@@ -80,12 +79,19 @@ gulp.task('styles:dev', ['clean:dev'], devActions.styles);
 gulp.task('views:dev', ['clean:dev'], devActions.views);
 gulp.task('resources:dev', ['clean:dev'], devActions.resources);
 
-gulp.task('clean:dist', distActions.clean);
-gulp.task('libs:dist', ['clean:dist'], distActions.concatLibs);
-gulp.task('scripts:dist', ['clean:dist'], distActions.scripts);
-gulp.task('styles:dist', ['clean:dist'], distActions.styles);
-gulp.task('views:dist', ['clean:dist'], distActions.views);
-gulp.task('resources:dist', ['clean:dist'], distActions.resources);
+gulp.task('clean:rc', rcActions.clean);
+gulp.task('libs:rc', ['clean:rc'], rcActions.concatLibs);
+gulp.task('scripts:rc', ['clean:rc'], rcActions.scripts);
+gulp.task('styles:rc', ['clean:rc'], rcActions.styles);
+gulp.task('views:rc', ['clean:rc'], rcActions.views);
+gulp.task('resources:rc', ['clean:rc'], rcActions.resources);
+
+gulp.task('clean:prod', prodActions.clean);
+gulp.task('libs:prod', ['clean:prod'], prodActions.concatLibs);
+gulp.task('scripts:prod', ['clean:prod'], prodActions.scripts);
+gulp.task('styles:prod', ['clean:prod'], prodActions.styles);
+gulp.task('views:prod', ['clean:prod'], prodActions.views);
+gulp.task('resources:prod', ['clean:prod'], prodActions.resources);
 
 gulp.task('scripts', devActions.scripts);
 gulp.task('styles', devActions.styles);
@@ -101,4 +107,5 @@ gulp.task('watch', function () {
 
 gulp.task('default', ['dev'], function () {});
 gulp.task('dev', ['libs:dev', 'scripts:dev', 'styles:dev', 'views:dev', 'resources:dev'], function () {});
-gulp.task('dist', ['libs:dist', 'scripts:dist', 'styles:dist', 'views:dist', 'resources:dist']);
+gulp.task('rc', ['libs:rc', 'scripts:rc', 'styles:rc', 'views:rc', 'resources:rc'], function () {});
+gulp.task('prod', ['libs:prod', 'scripts:prod', 'styles:prod', 'views:prod', 'resources:prod'], function () {});

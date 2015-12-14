@@ -11,9 +11,17 @@ module.exports = {
 	    return value;
 	  };
 	})(),
-	buildPaths: function (config, isDevelopment) {
-		var destRoot = (isDevelopment ? config.dir.root.dev: config.dir.root.dist);
+	buildPaths: function (config, environment) {
+		var destRoot = (function(env){
+			if(env === 'dev') return config.dir.root.dev;
+			else if(env === 'rc') return config.dir.root.rc;
+			else if(env === 'production') return config.dir.root.production;
+			else throw new Error('Invalid environment requested');
+		})(environment);
+		// var destRoot = (isDevelopment ? config.dir.root.dev: config.dir.root.dist);
 		return {
+			root: './' + destRoot,
+			
 			scripts: './' + config.dir.root.src + config.dir.type.source.scripts,
 			views: './' + config.dir.root.src + config.dir.type.source.views,
 			styles: './' + config.dir.root.src + config.dir.type.source.styles,
