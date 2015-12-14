@@ -58,8 +58,6 @@ var buildActions = function (environment) {
           }
         }))
         .pipe(gulp.dest(paths.html));
-      // gulp.src(['./', cfg.dir.root.src, cfg.dir.type.source.views, 'favicon.ico'].join(''))
-      //   .pipe(gulp.dest('./' + root + cfg.dir.type.destination.html));
     },
     resources: function () {
       gulp.src(paths.resources + '*.*')
