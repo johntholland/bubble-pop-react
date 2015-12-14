@@ -98,12 +98,15 @@ gulp.task('styles', devActions.styles);
 gulp.task('views', devActions.views);
 gulp.task('resources', devActions.resources);
 
-gulp.task('watch', function () {
-  gulp.watch(['./', cfg.dir.root.src, cfg.dir.type.source.scripts, '**/*.@(jsx|js)'].join(''), ['scripts']);
-  gulp.watch(['./', cfg.dir.root.src, cfg.dir.type.source.styles, '*.styl'].join(''), ['styles']);
-  gulp.watch(['./', cfg.dir.root.src, cfg.dir.type.source.views, '[!_]*.jade'].join(''), ['views']);
-  gulp.watch(['./', cfg.dir.root.src, cfg.dir.type.source.resources, '*.*'].join(''), ['resources']);
-});
+gulp.task('watch',(function() {
+	var paths = gulputil.buildPaths(cfg, 'dev');
+	return function () {
+	  gulp.watch(paths.scripts + '**/*.@(jsx|js)', ['scripts']);
+	  gulp.watch(paths.styles + '*.styl', ['styles']);
+	  gulp.watch(paths.views + '[!_]*.jade', ['views']);
+	  gulp.watch(paths.resources + '*.*', ['resources']);
+	};
+})());
 
 gulp.task('default', ['dev'], function () {});
 gulp.task('dev', ['libs:dev', 'scripts:dev', 'styles:dev', 'views:dev', 'resources:dev'], function () {});
