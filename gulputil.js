@@ -30,8 +30,8 @@ module.exports = {
 			css: './' + destRoot + config.dir.type.destination.css,
 			html: './' + destRoot + config.dir.type.destination.html,
 
-			resources: './' + destRoot + config.dir.type.resouces,
-			assets: './' + destRoot + config.dir.type.assets
+			resources: './' + config.dir.root.src + config.dir.type.source.resources,
+			assets: './' + destRoot + config.dir.type.destination.assets
 		}
 	}
 };
