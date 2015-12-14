@@ -21,14 +21,17 @@ module.exports = {
 		// var destRoot = (isDevelopment ? config.dir.root.dev: config.dir.root.dist);
 		return {
 			root: './' + destRoot,
-			
+
 			scripts: './' + config.dir.root.src + config.dir.type.source.scripts,
 			views: './' + config.dir.root.src + config.dir.type.source.views,
 			styles: './' + config.dir.root.src + config.dir.type.source.styles,
 
 			js: './' + destRoot + config.dir.type.destination.js,
 			css: './' + destRoot + config.dir.type.destination.css,
-			html: './' + destRoot + config.dir.type.destination.html
+			html: './' + destRoot + config.dir.type.destination.html,
+
+			resources: './' + destRoot + config.dir.type.resouces,
+			assets: './' + destRoot + config.dir.type.assets
 		}
 	}
 };

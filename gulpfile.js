@@ -62,8 +62,8 @@ var buildActions = function (environment) {
       //   .pipe(gulp.dest('./' + root + cfg.dir.type.destination.html));
     },
     resources: function () {
-      // gulp.src(['./', cfg.dir.root.src, cfg.dir.type.source.resources, '*.*'].join(''))
-      //   .pipe(gulp.dest('./' + root + cfg.dir.type.destination.resources));
+      gulp.src(paths.resources + '*.*')
+        .pipe(gulp.dest(paths.assets));
     }
   }
 };

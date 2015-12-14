@@ -17,7 +17,7 @@
   	    "js": "public/js/",
         "css": "public/css/",
         "html": "public/",
-  	    "resources": "public/resources/"
+  	    "assets": "public/assets/"
   	  }
     }
   },
