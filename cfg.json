@@ -1,0 +1,31 @@
+{
+  "dir": {
+    "root":{
+      "src": "src/",
+      "dev": "_dev/",
+      "dist": "_dist/"
+    },
+    "type": {
+  	  "source": {
+  	    "scripts": "scripts/",
+        "views": "views/",
+        "styles": "styles/",
+  	    "resources": "resources/"
+  	  },
+  	  "destination": {
+  	    "js": "public/js/",
+        "css": "public/css/",
+        "html": "public/",
+  	    "resources": "public/resources/"
+  	  }
+    }
+  },
+  "bowerLibraryFilePaths": [
+    "./bower_components/react/react.min.js",
+    "./bower_components/react/react-dom.min.js",
+    "./bower_components/when/es6-shim/Promise.js",
+    "./bower_components/lodash/lodash.min.js",
+    "./bower_components/postal.js/lib/postal.min.js",
+    "./bower_components/oboe/dist/oboe-browser.min.js"
+  ]
+}

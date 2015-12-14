@@ -1,0 +1,15 @@
+{
+  "name": "Clearspan-WebClientBuildSystem",
+  "version": "0.0.1",
+  "description": "CDF",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "lodash": "~3.10.1",
+    "oboe": "~2.1.2",
+    "postal.js": "~1.0.7",
+    "react": "~0.14.3",
+    "when": "~3.7.5"
+  },
+  "devDependencies": {}
+}
