@@ -70,39 +70,33 @@ var devActions = buildActions('dev');
 var rcActions = buildActions('rc');
 var prodActions = buildActions('production');
 
-gulp.task('clean:dev', devActions.clean);
-gulp.task('libs:dev', ['clean:dev'], devActions.concatLibs);
-gulp.task('scripts:dev', ['clean:dev'], devActions.scripts);
-gulp.task('styles:dev', ['clean:dev'], devActions.styles);
-gulp.task('views:dev', ['clean:dev'], devActions.views);
-gulp.task('resources:dev', ['clean:dev'], devActions.resources);
+var createBuildTaskSet = function (actionSource, environment, taskNameExtension) {
+	var ext = taskNameExtension;
 
-gulp.task('clean:rc', rcActions.clean);
-gulp.task('libs:rc', ['clean:rc'], rcActions.concatLibs);
-gulp.task('scripts:rc', ['clean:rc'], rcActions.scripts);
-gulp.task('styles:rc', ['clean:rc'], rcActions.styles);
-gulp.task('views:rc', ['clean:rc'], rcActions.views);
-gulp.task('resources:rc', ['clean:rc'], rcActions.resources);
+	gulp.task('clean:' + ext, actionSource.clean);
+	gulp.task('libs:' + ext, ['clean:' + ext], actionSource.concatLibs);
+	gulp.task('scripts:' + ext, ['clean:' + ext], actionSource.scripts);
+	gulp.task('styles:' + ext, ['clean:' + ext], actionSource.styles);
+	gulp.task('views:' + ext, ['clean:' + ext], actionSource.views);
+	gulp.task('resources:' + ext, ['clean:' + ext], actionSource.resources);
+}
 
-gulp.task('clean:prod', prodActions.clean);
-gulp.task('libs:prod', ['clean:prod'], prodActions.concatLibs);
-gulp.task('scripts:prod', ['clean:prod'], prodActions.scripts);
-gulp.task('styles:prod', ['clean:prod'], prodActions.styles);
-gulp.task('views:prod', ['clean:prod'], prodActions.views);
-gulp.task('resources:prod', ['clean:prod'], prodActions.resources);
+createBuildTaskSet(devActions, 'dev', 'dev');
+createBuildTaskSet(rcActions, 'rc', 'rc');
+createBuildTaskSet(prodActions, 'production', 'prod');
 
-gulp.task('scripts', devActions.scripts);
-gulp.task('styles', devActions.styles);
-gulp.task('views', devActions.views);
-gulp.task('resources', devActions.resources);
+gulp.task('scripts:watch', devActions.scripts);
+gulp.task('styles:watch', devActions.styles);
+gulp.task('views:watch', devActions.views);
+gulp.task('resources:watch', devActions.resources);
 
 gulp.task('watch',(function() {
 	var paths = gulputil.buildPaths(cfg, 'dev');
 	return function () {
-	  gulp.watch(paths.scripts + '**/*.@(jsx|js)', ['scripts']);
-	  gulp.watch(paths.styles + '*.styl', ['styles']);
-	  gulp.watch(paths.views + '[!_]*.jade', ['views']);
-	  gulp.watch(paths.resources + '*.*', ['resources']);
+	  gulp.watch(paths.scripts + '**/*.@(jsx|js)', ['scripts:watch']);
+	  gulp.watch(paths.styles + '*.styl', ['styles:watch']);
+	  gulp.watch(paths.views + '[!_]*.jade', ['views:watch']);
+	  gulp.watch(paths.resources + '*.*', ['resources:watch']);
 	};
 })());
 
