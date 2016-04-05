@@ -95,7 +95,7 @@ gulp.task('watch',(function() {
 	return function () {
 	  gulp.watch(paths.scripts + '**/*.@(jsx|js)', ['scripts:watch']);
 	  gulp.watch(paths.styles + '*.styl', ['styles:watch']);
-	  gulp.watch(paths.views + '[!_]*.jade', ['views:watch']);
+	  gulp.watch(paths.views + '*.jade', ['views:watch']);
 	  gulp.watch(paths.resources + '*.*', ['resources:watch']);
 	};
 })());
