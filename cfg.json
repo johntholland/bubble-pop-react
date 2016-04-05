@@ -26,7 +26,7 @@
     "./bower_components/react/react-dom.min.js",
     "./bower_components/when/es6-shim/Promise.js",
     "./bower_components/lodash/lodash.min.js",
-    "./bower_components/postal.js/lib/postal.min.js",
+    "./bower_components/njw-postal.js/lib/postal.min.js",
     "./bower_components/oboe/dist/oboe-browser.min.js"
   ]
 }
