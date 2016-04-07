@@ -28,5 +28,17 @@
     "./bower_components/lodash/lodash.min.js",
     "./bower_components/njw-postal.js/lib/postal.min.js",
     "./bower_components/oboe/dist/oboe-browser.min.js"
-  ]
+  ],
+  "appConfigurations": {
+    "default": {
+      "authorizationApiUrl": "http://52.90.51.179:4040/",
+      "sealingServerApiUrl": "http://sealingserver-develop.azurewebsites.net/api/"
+    },
+    "localhost": {
+      "sealingServerApiUrl": "http://localhost:61800/api/"
+    },
+    "production": {
+      "sealingServerApiUrl": "http://sealingserver-production.azurewebsites.net/api/"
+    }
+  }
 }

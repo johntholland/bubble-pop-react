@@ -7,6 +7,7 @@ var source = require('vinyl-source-stream');
 var browserify = require('browserify');
 var del = require('del');
 var nib = require('nib');
+var stream = require('stream');
 
 var cfg = require('./cfg.json');
 var gulputil = require('./gulputil.js');
@@ -29,11 +30,23 @@ var buildActions = function (environment) {
         .pipe(gulp.dest(paths.js));
     },
     scripts: function () {
+      appConfigSources = [cfg.appConfigurations.default];
+      if(environment === 'production') appConfigSources.push(cfg.appConfigurations.production);
+
+      var configStream = new stream.Readable();
+      configStream.push(
+        'module.exports=' +
+        JSON.stringify(Object.assign.apply(null, [{}].concat(appConfigSources)))
+      );
+      configStream.push(null);
+
       var b = browserify({
         entries: paths.scripts + 'app.jsx',
         extensions: ['.js', '.jsx'],
         paths: [paths.scripts]
-      });
+      }).exclude('appconfiguration')
+        .require(configStream, {expose: 'appconfiguration', basedir: './src/scripts'});
+
       b.transform('babelify', {presets: ['react']})
         .bundle()
         .on('error', function (err) {
@@ -79,7 +92,7 @@ var createBuildTaskSet = function (actionSource, environment, taskNameExtension)
 	gulp.task('styles:' + ext, ['clean:' + ext], actionSource.styles);
 	gulp.task('views:' + ext, ['clean:' + ext], actionSource.views);
 	gulp.task('resources:' + ext, ['clean:' + ext], actionSource.resources);
-}
+};
 
 createBuildTaskSet(devActions, 'dev', 'dev');
 createBuildTaskSet(rcActions, 'rc', 'rc');
