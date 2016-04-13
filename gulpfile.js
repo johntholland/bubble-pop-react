@@ -83,6 +83,7 @@ var buildActions = function (environment) {
 };
 
 var devActions = buildActions('dev');
+var localActions = buildActions('localhost');
 var rcActions = buildActions('rc');
 var prodActions = buildActions('production');
 
@@ -98,6 +99,7 @@ var createBuildTaskSet = function (actionSource, environment, taskNameExtension)
 };
 
 createBuildTaskSet(devActions, 'dev', 'dev');
+createBuildTaskSet(localActions, 'localhost', 'local');
 createBuildTaskSet(rcActions, 'rc', 'rc');
 createBuildTaskSet(prodActions, 'production', 'prod');
 
@@ -123,5 +125,6 @@ gulp.task('watch',(function() {
 
 gulp.task('default', ['dev'], function () {});
 gulp.task('dev', ['libs:dev', 'scripts:dev', 'styles:dev', 'views:dev', 'resources:dev'], function () {});
+gulp.task('local', ['libs:local', 'scripts:local', 'styles:local', 'views:local', 'resources:local'], function () {});
 gulp.task('rc', ['libs:rc', 'scripts:rc', 'styles:rc', 'views:rc', 'resources:rc'], function () {});
 gulp.task('prod', ['libs:prod', 'scripts:prod', 'styles:prod', 'views:prod', 'resources:prod'], function () {});
