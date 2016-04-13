@@ -125,6 +125,6 @@ gulp.task('watch',(function() {
 
 gulp.task('default', ['dev'], function () {});
 gulp.task('dev', ['libs:dev', 'scripts:dev', 'styles:dev', 'views:dev', 'resources:dev'], function () {});
-gulp.task('local', ['libs:local', 'scripts:local', 'styles:local', 'views:local', 'resources:local'], function () {});
+gulp.task('localhost', ['libs:local', 'scripts:local', 'styles:local', 'views:local', 'resources:local'], function () {});
 gulp.task('rc', ['libs:rc', 'scripts:rc', 'styles:rc', 'views:rc', 'resources:rc'], function () {});
 gulp.task('prod', ['libs:prod', 'scripts:prod', 'styles:prod', 'views:prod', 'resources:prod'], function () {});
