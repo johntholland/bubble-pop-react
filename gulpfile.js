@@ -61,7 +61,10 @@ var buildActions = function (environment) {
     },
     styles: function () {
       gulp.src(paths.styles + '[!_]*.styl')
-        .pipe(stylus({use: [nib()]}))
+        .pipe(stylus({
+          use: [nib()],
+          define: {"app-environment": environment}
+        }))
         .pipe(gulp.dest(paths.css));
     },
     views: function () {
