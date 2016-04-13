@@ -8,6 +8,7 @@ var browserify = require('browserify');
 var del = require('del');
 var nib = require('nib');
 var stream = require('stream');
+var _ = require('lodash');
 
 var cfg = require('./cfg.json');
 var gulputil = require('./gulputil.js');
@@ -36,7 +37,7 @@ var buildActions = function (environment) {
       var configStream = new stream.Readable();
       configStream.push(
         'module.exports=' +
-        JSON.stringify(Object.assign.apply(null, [{}].concat(appConfigSources)))
+        JSON.stringify(_.assign.apply(null, [{}].concat(appConfigSources)))
       );
       configStream.push(null);
 
