@@ -13,7 +13,7 @@ module.exports = {
 	})(),
 	buildPaths: function (config, environment) {
 		var destRoot = (function(env){
-			if(env === 'dev') return config.dir.root.dev;
+			if(env === 'dev' || env === 'localhost') return config.dir.root.dev;
 			else if(env === 'rc') return config.dir.root.rc;
 			else if(env === 'production') return config.dir.root.production;
 			else throw new Error('Invalid environment requested');

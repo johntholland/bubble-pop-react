@@ -10,13 +10,14 @@ var nib = require('nib');
 var stream = require('stream');
 var _ = require('lodash');
 
+var argv = require('minimist')(process.argv.slice(2));
 var cfg = require('./cfg.json');
 var gulputil = require('./gulputil.js');
 
 var buildActions = function (environment) {
 
-  var jsAppFilename = environment === 'dev' ? 'app.js' : gulputil.buildCacheBusterString(10) + '.js';
-  var jsLibFilename = environment === 'dev' ? 'lib.js' : gulputil.buildCacheBusterString(8) + '.js';
+  var jsAppFilename = environment === 'dev' || 'localhost' ? 'app.js' : gulputil.buildCacheBusterString(10) + '.js';
+  var jsLibFilename = environment === 'dev' || 'localhost' ? 'lib.js' : gulputil.buildCacheBusterString(8) + '.js';
 
   var paths = gulputil.buildPaths(cfg, environment);
 
@@ -32,7 +33,8 @@ var buildActions = function (environment) {
     },
     scripts: function () {
       appConfigSources = [cfg.appConfigurations.default];
-      if(environment === 'production') appConfigSources.push(cfg.appConfigurations.production);
+      if(environment === 'localhost') appConfigSources.push(cfg.appConfigurations.localhost);
+      else if(environment === 'production') appConfigSources.push(cfg.appConfigurations.production);
 
       var configStream = new stream.Readable();
       configStream.push(
@@ -99,12 +101,17 @@ createBuildTaskSet(devActions, 'dev', 'dev');
 createBuildTaskSet(rcActions, 'rc', 'rc');
 createBuildTaskSet(prodActions, 'production', 'prod');
 
-gulp.task('scripts:watch', devActions.scripts);
-gulp.task('styles:watch', devActions.styles);
-gulp.task('views:watch', devActions.views);
-gulp.task('resources:watch', devActions.resources);
 
 gulp.task('watch',(function() {
+  var provided = _.intersection(['dev', 'localhost'], _.keys(argv));
+  var environment = provided.length > 0 ? _.first(provided) : 'dev';
+
+  var actions = buildActions(environment);
+  gulp.task('scripts:watch', actions.scripts);
+  gulp.task('styles:watch', actions.styles);
+  gulp.task('views:watch', actions.views);
+  gulp.task('resources:watch', actions.resources);
+
 	var paths = gulputil.buildPaths(cfg, 'dev');
 	return function () {
 	  gulp.watch(paths.scripts + '**/*.@(jsx|js)', ['scripts:watch']);
