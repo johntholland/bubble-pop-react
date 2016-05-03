@@ -16,8 +16,8 @@ var gulputil = require('./gulputil.js');
 
 var buildActions = function (environment) {
 
-  var jsAppFilename = environment === 'dev' || 'localhost' ? 'app.js' : gulputil.buildCacheBusterString(10) + '.js';
-  var jsLibFilename = environment === 'dev' || 'localhost' ? 'lib.js' : gulputil.buildCacheBusterString(8) + '.js';
+  var jsAppFilename = environment === 'dev' || environment === 'localhost' ? 'app.js' : gulputil.buildCacheBusterString(10) + '.js';
+  var jsLibFilename = environment === 'dev' || environment === 'localhost' ? 'lib.js' : gulputil.buildCacheBusterString(8) + '.js';
 
   var paths = gulputil.buildPaths(cfg, environment);
 
