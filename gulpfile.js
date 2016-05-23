@@ -6,7 +6,7 @@ var jade = require('gulp-jade');
 var source = require('vinyl-source-stream');
 var runsequence = require('run-sequence');
 var browserify = require('browserify');
-var lint = require('gulp-eslint');
+var eslint = require('gulp-eslint');
 var del = require('del');
 var nib = require('nib');
 var stream = require('stream');
@@ -116,10 +116,29 @@ gulp.task('resources', function () {
 });
 
 gulp.task('lint', function () {
-  gulp.src(cfg.dir.root.src + cfg.dir.type.source.scripts + '**/*.@(js|jsx)')
-    .pipe(lint())
-    .pipe(lint.format())
-    .pipe(lint.failAfterError());
+  return gulp.src(cfg.dir.root.src + cfg.dir.type.source.scripts + '**/*.@(js|jsx)')
+    .pipe(eslint({
+      extends: 'eslint:recommended',
+      parserOptions: {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        }
+      },
+      rules: {
+        "no-console": "warn"
+      },
+      globals: {
+        'console': true,
+        'jQuery':false
+      },
+      env: {
+        'commonjs': true
+      }
+    }))
+    .pipe(eslint.format());
+    // .pipe(eslint.failAfterError());
 });
 
 gulp.task('watch', function () {
@@ -130,7 +149,7 @@ gulp.task('watch', function () {
   var paths = cfg.dir.type.source;
   var root = cfg.dir.root.src;
 
-  gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['scripts']);
+  gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['lint', 'scripts']);
   gulp.watch(root + paths.styles + '*.styl', ['styles']);
   gulp.watch(root + paths.views + '*.jade', ['views']);
   gulp.watch(root + paths.resources + '*.*', ['resources']);
@@ -138,7 +157,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('build', function () {
-  runsequence('clean', ['libraries', 'scripts', 'styles', 'views', 'resources']);
+  runsequence('clean', 'lint', ['libraries', 'scripts', 'styles', 'views', 'resources']);
 });
 
 gulp.task('dev', function () {
