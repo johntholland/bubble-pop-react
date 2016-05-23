@@ -24,7 +24,7 @@ var _devEnvironment = {
 };
 var _localhostEnvironment = {
   name: 'localhost',
-  appConfiguration: cfg.appConfigurations.localhost
+  appConfiguration: _.assign({}, cfg.appConfigurations.default , cfg.appConfigurations.localhost)
 };
 
 var _productionEnvironment = {
