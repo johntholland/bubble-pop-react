@@ -7,9 +7,9 @@
   "dependencies": {
     "lodash": "^4.7.0",
     "oboe": "~2.1.2",
-    "njw-postal.js": "git://github.com/njweb/postal.js.git#master",
     "react": "~0.14.3",
-    "when": "~3.7.5"
+    "when": "~3.7.5",
+    "postal.js": "^2.0.0"
   },
   "devDependencies": {},
   "resolutions": {
