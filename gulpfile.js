@@ -4,6 +4,7 @@ var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var jade = require('gulp-jade');
 var source = require('vinyl-source-stream');
+var runsequence = require('run-sequence');
 var browserify = require('browserify');
 var del = require('del');
 var nib = require('nib');
@@ -113,37 +114,35 @@ gulp.task('resources', function () {
 });
 
 gulp.task('watch', function () {
-  if(_.includes(_.keys(argv), 'localhost')){
+  if (_.includes(_.keys(argv), 'localhost')) {
     environment = _.assign({}, environment, _localhostEnvironment);
   }
 
   var paths = cfg.dir.type.source;
-  var root = environment.root;
-  return function () {
-    gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['scripts']);
-    gulp.watch(root + paths.styles + '*.styl', ['styles']);
-    gulp.watch(root + paths.views + '*.jade', ['views']);
-    gulp.watch(root + paths.resources + '*.*', ['resources']);
-  };
+  var root = cfg.dir.root.src;
+
+  gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['scripts']);
+  gulp.watch(root + paths.styles + '*.styl', ['styles']);
+  gulp.watch(root + paths.views + '*.jade', ['views']);
+  gulp.watch(root + paths.resources + '*.*', ['resources']);
+
 });
 
-gulp.task('build', ['libraries', 'scripts', 'styles', 'views', 'resources']);
-gulp.task('clean-build', ['clean'], function () {
-  if (gulp.tasks.build) return gulp.start('build');
-  else throw new Error('No build task found');
+gulp.task('build', function () {
+  runsequence('clean', ['libraries', 'scripts', 'styles', 'views', 'resources']);
 });
 
 gulp.task('dev', function () {
   if (_.includes(_.keys(argv), 'localhost')) {
     environment = _.assign({}, environment, _localhostEnvironment);
   }
-  if (gulp.tasks['clean-build']) return gulp.start('clean-build');
+  if (gulp.tasks.build) return gulp.start('build');
   else throw new Error('No build task found');
 });
 
 gulp.task('production', function () {
   environment = _.assign({}, environment, _productionEnvironment);
-  if (gulp.tasks['clean-build']) return gulp.start('clean-build');
+  if (gulp.tasks.build) return gulp.start('build');
   else throw new Error('No build task found');
 });
 
