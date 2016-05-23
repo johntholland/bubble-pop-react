@@ -61,7 +61,7 @@ gulp.task('libraries', function () {
   });
 });
 
-gulp.task('scripts', ['clean'], function () {
+gulp.task('scripts', function () {
 
   var configStream = new stream.Readable();
   configStream.push('module.exports=' + JSON.stringify(environment.appConfiguration));
@@ -86,7 +86,7 @@ gulp.task('scripts', ['clean'], function () {
 
 });
 
-gulp.task('styles',['clean'], function () {
+gulp.task('styles', function () {
   return gulp.src(cfg.dir.root.src + cfg.dir.type.source.styles + '[!_]*.styl')
     .pipe(stylus({
       use: [nib()],
@@ -95,7 +95,7 @@ gulp.task('styles',['clean'], function () {
     .pipe(gulp.dest(environment.root + cfg.dir.type.destination.css));
 });
 
-gulp.task('views', ['clean'], function () {
+gulp.task('views', function () {
   return gulp.src(cfg.dir.root.src + cfg.dir.type.source.views + '[!_]*.jade')
     .pipe(jade({
       pretty: true,
@@ -128,18 +128,22 @@ gulp.task('watch', function () {
 });
 
 gulp.task('build', ['libraries', 'scripts', 'styles', 'views', 'resources']);
+gulp.task('clean-build', ['clean'], function () {
+  if (gulp.tasks.build) return gulp.start('build');
+  else throw new Error('No build task found');
+});
 
 gulp.task('dev', function () {
   if (_.includes(_.keys(argv), 'localhost')) {
     environment = _.assign({}, environment, _localhostEnvironment);
   }
-  if (gulp.tasks.build) return gulp.start('build');
+  if (gulp.tasks['clean-build']) return gulp.start('clean-build');
   else throw new Error('No build task found');
 });
 
 gulp.task('production', function () {
   environment = _.assign({}, environment, _productionEnvironment);
-  if (gulp.tasks.build) return gulp.start('build');
+  if (gulp.tasks['clean-build']) return gulp.start('clean-build');
   else throw new Error('No build task found');
 });
 
