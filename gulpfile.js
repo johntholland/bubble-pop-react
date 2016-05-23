@@ -14,120 +14,133 @@ var argv = require('minimist')(process.argv.slice(2));
 var cfg = require('./cfg.json');
 var gulputil = require('./gulputil.js');
 
-var buildActions = function (environment) {
+var _devEnvironment = {
+  name: 'dev',
+  root: cfg.dir.root.dev,
+  appFilename: 'app.js',
+  libFilename: 'lib.js',
+  appConfiguration: cfg.appConfigurations.default
+};
+var _localhostEnvironment = {
+  name: 'localhost',
+  appConfiguration: cfg.appConfigurations.localhost
+};
 
-  var jsAppFilename = environment === 'dev' || environment === 'localhost' ? 'app.js' : gulputil.buildCacheBusterString(10) + '.js';
-  var jsLibFilename = environment === 'dev' || environment === 'localhost' ? 'lib.js' : gulputil.buildCacheBusterString(8) + '.js';
+var _productionEnvironment = {
+  name: 'production',
+  root: cfg.dir.root.production,
+  appFilename: gulputil.buildCacheBusterString(7) + '.js',
+  libFilename: gulputil.buildCacheBusterString(8) + '.js',
+  appConfiguration: cfg.appConfigurations.production
+};
 
-  var paths = gulputil.buildPaths(cfg, environment);
 
-  return {
-    clean: function () {
-      return del([paths.root]);
-    },
-    concatLibs: function () {
-      gulp.src(cfg.bowerLibraryFilePaths)
-        .pipe(uglify())
-        .pipe(concat(jsLibFilename))
-        .pipe(gulp.dest(paths.js));
-    },
-    scripts: function () {
-      appConfigSources = [cfg.appConfigurations.default];
-      if(environment === 'localhost') appConfigSources.push(cfg.appConfigurations.localhost);
-      else if(environment === 'production') appConfigSources.push(cfg.appConfigurations.production);
+var environment = _.assign({}, _devEnvironment);
 
-      var configStream = new stream.Readable();
-      configStream.push(
-        'module.exports=' +
-        JSON.stringify(_.assign.apply(null, [{}].concat(appConfigSources)))
-      );
-      configStream.push(null);
+gulp.task('clean', function () {
+  return del([environment.root]);
+});
 
-      var b = browserify({
-        entries: paths.scripts + 'app.jsx',
-        extensions: ['.js', '.jsx'],
-        paths: [paths.scripts]
-      }).exclude('appconfiguration')
-        .require(configStream, {expose: 'appconfiguration', basedir: './src/scripts'});
+gulp.task('libraries', function () {
+  return Promise.all(_.map(cfg.bowerLibraryFilePaths, function (path) {
+    return gulputil.pIsFileAvaliable(path).then(function (isAvaliable) {
+      return {
+        filePath: path,
+        isAvaliable: isAvaliable
+      };
+    });
+  })).then(function (results) {
+    _.forEach(results, function (r) {
+      if (!r.isAvaliable) { console.error('Cannot find library file at: ' + r.filePath); }
+    });
+  }).then(function () {
+    return gulp.src(cfg.bowerLibraryFilePaths)
+      .pipe(uglify())
+      .pipe(concat(environment.libFilename))
+      .pipe(gulp.dest(environment.root + cfg.dir.type.destination.js));
+  });
+});
 
-      b.transform('babelify', {presets: ['react']})
-        .bundle()
-        .on('error', function (err) {
-          console.error(err.toString());
-          this.emit('end');
-        })
-        .pipe(source(jsAppFilename))
-        .pipe(gulp.dest(paths.js));
-    },
-    styles: function () {
-      gulp.src(paths.styles + '[!_]*.styl')
-        .pipe(stylus({
-          use: [nib()],
-          define: {"app-environment": environment}
-        }))
-        .pipe(gulp.dest(paths.css));
-    },
-    views: function () {
-      gulp.src(paths.views + '[!_]*.jade')
-        .pipe(jade({
-          pretty: true,
-          data: {
-            js_appFile: 'js/' + jsAppFilename,
-            js_libFile: 'js/' + jsLibFilename
-          }
-        }))
-        .pipe(gulp.dest(paths.html));
-    },
-    resources: function () {
-      gulp.src(paths.resources + '*.*')
-        .pipe(gulp.dest(paths.assets));
-    }
+gulp.task('scripts', ['clean'], function () {
+
+  var configStream = new stream.Readable();
+  configStream.push('module.exports=' + JSON.stringify(environment.appConfiguration));
+  configStream.push(null);
+
+  var scriptSourceDir = cfg.dir.root.src + cfg.dir.type.source.scripts;
+  var b = browserify({
+    entries: scriptSourceDir + 'app.jsx',
+    extensions: ['.js', '.jsx'],
+    paths: [scriptSourceDir]
+  }).exclude('appconfiguration')
+    .require(configStream, {expose: 'appconfiguration', basedir: './src/scripts'});
+
+  return b.transform('babelify', {presets: ['react']})
+    .bundle()
+    .on('error', function (err) {
+      console.error(err.toString());
+      this.emit('end');
+    })
+    .pipe(source(environment.appFilename))
+    .pipe(gulp.dest(environment.root + cfg.dir.type.destination.js));
+
+});
+
+gulp.task('styles',['clean'], function () {
+  return gulp.src(cfg.dir.root.src + cfg.dir.type.source.styles + '[!_]*.styl')
+    .pipe(stylus({
+      use: [nib()],
+      define: {"app-environment": environment.name}
+    }))
+    .pipe(gulp.dest(environment.root + cfg.dir.type.destination.css));
+});
+
+gulp.task('views', ['clean'], function () {
+  return gulp.src(cfg.dir.root.src + cfg.dir.type.source.views + '[!_]*.jade')
+    .pipe(jade({
+      pretty: true,
+      data: {
+        js_appFile: 'js/' + environment.appFilename,
+        js_libFile: 'js/' + environment.libFilename
+      }
+    }))
+    .pipe(gulp.dest(environment.root + cfg.dir.type.destination.html));
+});
+
+gulp.task('resources', function () {
+  return gulp.src(cfg.dir.root.src + cfg.dir.type.source.resources + '*.*')
+    .pipe(gulp.dest(environment.root + cfg.dir.type.destination.assets));
+});
+
+gulp.task('watch', function () {
+  if(_.includes(_.keys(argv), 'localhost')){
+    environment = _.assign({}, environment, _localhostEnvironment);
   }
-};
 
-var devActions = buildActions('dev');
-var localActions = buildActions('localhost');
-var rcActions = buildActions('rc');
-var prodActions = buildActions('production');
+  var paths = cfg.dir.type.source;
+  var root = environment.root;
+  return function () {
+    gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['scripts']);
+    gulp.watch(root + paths.styles + '*.styl', ['styles']);
+    gulp.watch(root + paths.views + '*.jade', ['views']);
+    gulp.watch(root + paths.resources + '*.*', ['resources']);
+  };
+});
 
-var createBuildTaskSet = function (actionSource, environment, taskNameExtension) {
-	var ext = taskNameExtension;
+gulp.task('build', ['libraries', 'scripts', 'styles', 'views', 'resources']);
 
-	gulp.task('clean:' + ext, actionSource.clean);
-	gulp.task('libs:' + ext, ['clean:' + ext], actionSource.concatLibs);
-	gulp.task('scripts:' + ext, ['clean:' + ext], actionSource.scripts);
-	gulp.task('styles:' + ext, ['clean:' + ext], actionSource.styles);
-	gulp.task('views:' + ext, ['clean:' + ext], actionSource.views);
-	gulp.task('resources:' + ext, ['clean:' + ext], actionSource.resources);
-};
+gulp.task('dev', function () {
+  if (_.includes(_.keys(argv), 'localhost')) {
+    environment = _.assign({}, environment, _localhostEnvironment);
+  }
+  if (gulp.tasks.build) return gulp.start('build');
+  else throw new Error('No build task found');
+});
 
-createBuildTaskSet(devActions, 'dev', 'dev');
-createBuildTaskSet(localActions, 'localhost', 'local');
-createBuildTaskSet(rcActions, 'rc', 'rc');
-createBuildTaskSet(prodActions, 'production', 'prod');
+gulp.task('production', function () {
+  environment = _.assign({}, environment, _productionEnvironment);
+  if (gulp.tasks.build) return gulp.start('build');
+  else throw new Error('No build task found');
+});
 
-
-gulp.task('watch',(function() {
-  var provided = _.intersection(['dev', 'localhost'], _.keys(argv));
-  var environment = provided.length > 0 ? _.first(provided) : 'dev';
-
-  var actions = buildActions(environment);
-  gulp.task('scripts:watch', actions.scripts);
-  gulp.task('styles:watch', actions.styles);
-  gulp.task('views:watch', actions.views);
-  gulp.task('resources:watch', actions.resources);
-
-	var paths = gulputil.buildPaths(cfg, 'dev');
-	return function () {
-	  gulp.watch(paths.scripts + '**/*.@(jsx|js)', ['scripts:watch']);
-	  gulp.watch(paths.styles + '*.styl', ['styles:watch']);
-	  gulp.watch(paths.views + '*.jade', ['views:watch']);
-	  gulp.watch(paths.resources + '*.*', ['resources:watch']);
-	};
-})());
-
-gulp.task('default', ['dev'], function () {});
-gulp.task('dev', ['libs:dev', 'scripts:dev', 'styles:dev', 'views:dev', 'resources:dev'], function () {});
-gulp.task('localhost', ['libs:local', 'scripts:local', 'styles:local', 'views:local', 'resources:local'], function () {});
-gulp.task('rc', ['libs:rc', 'scripts:rc', 'styles:rc', 'views:rc', 'resources:rc'], function () {});
-gulp.task('prod', ['libs:prod', 'scripts:prod', 'styles:prod', 'views:prod', 'resources:prod'], function () {});
+gulp.task('default', ['dev']);
