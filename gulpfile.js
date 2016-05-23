@@ -5,6 +5,7 @@ var concat = require('gulp-concat');
 var jade = require('gulp-jade');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
+var lint = require('gulp-eslint');
 var del = require('del');
 var nib = require('nib');
 var stream = require('stream');
@@ -111,6 +112,13 @@ gulp.task('views', ['clean'], function () {
 gulp.task('resources', function () {
   return gulp.src(cfg.dir.root.src + cfg.dir.type.source.resources + '*.*')
     .pipe(gulp.dest(environment.root + cfg.dir.type.destination.assets));
+});
+
+gulp.task('lint', function () {
+  gulp.src(cfg.dir.root.src + cfg.dir.type.source.scripts + '**/*.@(js|jsx)')
+    .pipe(lint())
+    .pipe(lint.format())
+    .pipe(lint.failAfterError());
 });
 
 gulp.task('watch', function () {
