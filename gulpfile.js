@@ -4,6 +4,7 @@ var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var jade = require('gulp-jade');
 var source = require('vinyl-source-stream');
+var runsequence = require('run-sequence');
 var browserify = require('browserify');
 var lint = require('gulp-eslint');
 var del = require('del');
@@ -24,7 +25,7 @@ var _devEnvironment = {
 };
 var _localhostEnvironment = {
   name: 'localhost',
-  appConfiguration: cfg.appConfigurations.localhost
+  appConfiguration: _.assign({}, cfg.appConfigurations.default , cfg.appConfigurations.localhost)
 };
 
 var _productionEnvironment = {
@@ -62,7 +63,7 @@ gulp.task('libraries', function () {
   });
 });
 
-gulp.task('scripts', ['clean'], function () {
+gulp.task('scripts', function () {
 
   var configStream = new stream.Readable();
   configStream.push('module.exports=' + JSON.stringify(environment.appConfiguration));
@@ -88,7 +89,7 @@ gulp.task('scripts', ['clean'], function () {
 
 });
 
-gulp.task('styles',['clean'], function () {
+gulp.task('styles', function () {
   return gulp.src(cfg.dir.root.src + cfg.dir.type.source.styles + '[!_]*.styl')
     .pipe(stylus({
       use: [nib()],
@@ -97,7 +98,7 @@ gulp.task('styles',['clean'], function () {
     .pipe(gulp.dest(environment.root + cfg.dir.type.destination.css));
 });
 
-gulp.task('views', ['clean'], function () {
+gulp.task('views', function () {
   return gulp.src(cfg.dir.root.src + cfg.dir.type.source.views + '[!_]*.jade')
     .pipe(jade({
       pretty: true,
@@ -122,21 +123,23 @@ gulp.task('lint', function () {
 });
 
 gulp.task('watch', function () {
-  if(_.includes(_.keys(argv), 'localhost')){
+  if (_.includes(_.keys(argv), 'localhost')) {
     environment = _.assign({}, environment, _localhostEnvironment);
   }
 
   var paths = cfg.dir.type.source;
-  var root = environment.root;
-  return function () {
-    gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['scripts']);
-    gulp.watch(root + paths.styles + '*.styl', ['styles']);
-    gulp.watch(root + paths.views + '*.jade', ['views']);
-    gulp.watch(root + paths.resources + '*.*', ['resources']);
-  };
+  var root = cfg.dir.root.src;
+
+  gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['scripts']);
+  gulp.watch(root + paths.styles + '*.styl', ['styles']);
+  gulp.watch(root + paths.views + '*.jade', ['views']);
+  gulp.watch(root + paths.resources + '*.*', ['resources']);
+
 });
 
-gulp.task('build', ['libraries', 'scripts', 'styles', 'views', 'resources']);
+gulp.task('build', function () {
+  runsequence('clean', ['libraries', 'scripts', 'styles', 'views', 'resources']);
+});
 
 gulp.task('dev', function () {
   if (_.includes(_.keys(argv), 'localhost')) {
