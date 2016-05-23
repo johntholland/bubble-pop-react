@@ -71,7 +71,8 @@ gulp.task('scripts', ['clean'], function () {
   var b = browserify({
     entries: scriptSourceDir + 'app.jsx',
     extensions: ['.js', '.jsx'],
-    paths: [scriptSourceDir]
+    paths: [scriptSourceDir],
+    debug: environment.name !== _productionEnvironment.name
   }).exclude('appconfiguration')
     .require(configStream, {expose: 'appconfiguration', basedir: './src/scripts'});
 
