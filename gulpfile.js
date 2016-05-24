@@ -137,10 +137,13 @@ gulp.task('lint', function () {
       },
       globals: {
         'console': true,
+        'window': true,
+        'document': true,
         'React': true,
         'ReactDOM': true,
         '_': true,
         'postal': true,
+        'oboe': true,
         'Promise': true
       },
       env: {
