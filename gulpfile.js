@@ -7,6 +7,7 @@ var source = require('vinyl-source-stream');
 var runsequence = require('run-sequence');
 var browserify = require('browserify');
 var eslint = require('gulp-eslint');
+var mocha = require('gulp-mocha');
 var del = require('del');
 var nib = require('nib');
 var stream = require('stream');
@@ -141,6 +142,14 @@ gulp.task('lint', function () {
     // .pipe(eslint.failAfterError());
 });
 
+gulp.task('test', function () {
+  return gulp.src([cfg.dir.root.test + '**/*.test.js'], {read: false})
+    .pipe(mocha({
+      harmony: true,
+      reporter: 'min'
+    }));
+});
+
 gulp.task('watch', function () {
   if (_.includes(_.keys(argv), 'localhost')) {
     environment = _.assign({}, environment, _localhostEnvironment);
@@ -150,6 +159,8 @@ gulp.task('watch', function () {
   var root = cfg.dir.root.src;
 
   gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['lint', 'scripts']);
+  gulp.watch(root + paths.scripts + '**/*.@(jsx|js)', ['test']);
+  gulp.watch(cfg.dir.root.test + '**/*.test.js', ['test']);
   gulp.watch(root + paths.styles + '*.styl', ['styles']);
   gulp.watch(root + paths.views + '*.jade', ['views']);
   gulp.watch(root + paths.resources + '*.*', ['resources']);

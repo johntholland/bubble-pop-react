@@ -4,7 +4,8 @@
       "src": "src/",
       "dev": "_dev/",
       "rc": "_rc/",
-      "production": "_production/"
+      "production": "_production/",
+      "test": "test/"
     },
     "type": {
   	  "source": {
