@@ -128,12 +128,20 @@ gulp.task('lint', function () {
           "jsx": true
         }
       },
+      plugins: [
+        "react"
+      ],
       rules: {
-        "no-console": "warn"
+        "no-console": "warn",
+        "no-unused-vars": "off"
       },
       globals: {
         'console': true,
-        'jQuery':false
+        'React': true,
+        'ReactDOM': true,
+        '_': true,
+        'postal': true,
+        'Promise': true
       },
       env: {
         'commonjs': true
