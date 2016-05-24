@@ -180,7 +180,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('build', function () {
-  runsequence('clean', 'lint', ['libraries', 'scripts', 'styles', 'views', 'resources']);
+  runsequence('clean', 'lint', ['libraries', 'test', 'scripts', 'styles', 'views', 'resources']);
 });
 
 gulp.task('dev', function () {
