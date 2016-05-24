@@ -105,7 +105,8 @@ gulp.task('views', function () {
       pretty: true,
       data: {
         js_appFile: 'js/' + environment.appFilename,
-        js_libFile: 'js/' + environment.libFilename
+        js_libFile: 'js/' + environment.libFilename,
+        environment: environment.name
       }
     }))
     .pipe(gulp.dest(environment.root + cfg.dir.type.destination.html));
