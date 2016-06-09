@@ -94,7 +94,8 @@ gulp.task('styles', function () {
   return gulp.src(cfg.dir.root.src + cfg.dir.type.source.styles + '[!_]*.styl')
     .pipe(stylus({
       use: [nib()],
-      define: {"app-environment": environment.name}
+      define: {"app-environment": environment.name},
+      'include css': true
     }))
     .pipe(gulp.dest(environment.root + cfg.dir.type.destination.css));
 });
