@@ -22,11 +22,20 @@ var _devEnvironment = {
   root: cfg.dir.root.dev,
   appFilename: 'app.js',
   libFilename: 'lib.js',
-  appConfiguration: cfg.appConfigurations.default
+  appConfiguration: cfg.appConfigurations.develop
 };
+
+var _dev2Environment = {
+  name: 'dev2',
+  root: cfg.dir.root.dev,
+  appFilename: 'app.js',
+  libFilename: 'lib.js',
+  appConfiguration: cfg.appConfigurations.develop2
+};
+
 var _localhostEnvironment = {
   name: 'localhost',
-  appConfiguration: _.assign({}, cfg.appConfigurations.default , cfg.appConfigurations.localhost)
+  appConfiguration: _.assign({}, cfg.appConfigurations.develop , cfg.appConfigurations.localhost)
 };
 
 var _productionEnvironment = {
@@ -164,8 +173,10 @@ gulp.task('test', function () {
 });
 
 gulp.task('watch', function () {
-  if (_.includes(_.keys(argv), 'localhost')) {
+  if (_.includes(_.keys(argv), 'localhost') && !_.includes(_.keys(argv), 'dev2')) { // --localhost
     environment = _.assign({}, environment, _localhostEnvironment);
+  } else if (_.includes(_.keys(argv), 'dev2') && !_.includes(_.keys(argv), 'localhost')) { // --dev2
+    environment = _.assign({}, environment, _dev2Environment);
   }
 
   var paths = cfg.dir.type.source;
@@ -188,6 +199,12 @@ gulp.task('dev', function () {
   if (_.includes(_.keys(argv), 'localhost')) {
     environment = _.assign({}, environment, _localhostEnvironment);
   }
+  if (gulp.tasks.build) return gulp.start('build');
+  else throw new Error('No build task found');
+});
+
+gulp.task('dev2', function () {
+  environment = _.assign({}, environment, _dev2Environment);
   if (gulp.tasks.build) return gulp.start('build');
   else throw new Error('No build task found');
 });

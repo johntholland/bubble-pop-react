@@ -31,11 +31,17 @@
     "./bower_components/oboe/dist/oboe-browser.min.js"
   ],
   "appConfigurations": {
-    "default": {
+    "develop": {
       "authorizationApiUrl": "https://develop.auth.paragontruss.com/",
       "sealingServerApiUrl": "https://sealingserver-develop.azurewebsites.net/api/",
       "pdfReviewClientUrl": "https://develop.pdfeditor.paragontruss.com/",
       "designServiceApi": "https://designservice-develop.azurewebsites.net/api/"
+    },
+	"develop2": {
+      "authorizationApiUrl": "https://develop2.auth.paragontruss.com/",
+      "sealingServerApiUrl": "https://sealingserver-develop2.azurewebsites.net/api/",
+      "pdfReviewClientUrl": "https://develop2.pdfeditor.paragontruss.com/",
+      "designServiceApi": "https://designservice-develop2.azurewebsites.net/api/"
     },
     "localhost": {
       "sealingServerApiUrl": "http://localhost:61800/api/",
