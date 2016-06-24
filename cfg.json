@@ -22,13 +22,12 @@
   	  }
     }
   },
-  "bowerLibraryFilePaths": [
-    "./bower_components/react/react.min.js",
-    "./bower_components/react/react-dom.min.js",
-    "./bower_components/when/es6-shim/Promise.js",
-    "./bower_components/lodash/dist/lodash.min.js",
-    "./bower_components/postal.js/lib/postal.min.js",
-    "./bower_components/oboe/dist/oboe-browser.min.js"
+  "npmLibraries": [
+    "react",
+    "react-dom",
+    "es6-promise",
+    "lodash",
+    "postal"
   ],
   "appConfigurations": {
     "develop": {

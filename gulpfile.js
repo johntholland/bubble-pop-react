@@ -5,6 +5,7 @@ var concat = require('gulp-concat');
 var jade = require('gulp-jade');
 var source = require('vinyl-source-stream');
 var runsequence = require('run-sequence');
+var envify = require('envify/custom');
 var browserify = require('browserify');
 var eslint = require('gulp-eslint');
 var mocha = require('gulp-mocha');
@@ -25,18 +26,15 @@ var _devEnvironment = {
   appConfiguration: cfg.appConfigurations.develop
 };
 
-var _dev2Environment = {
+var _dev2Environment = _.assign({}, _devEnvironment, {
   name: 'dev2',
-  root: cfg.dir.root.dev,
-  appFilename: 'app.js',
-  libFilename: 'lib.js',
   appConfiguration: cfg.appConfigurations.develop2
-};
+});
 
-var _localhostEnvironment = {
+var _localhostEnvironment = _.assign({}, _devEnvironment, {
   name: 'localhost',
-  appConfiguration: _.assign({}, cfg.appConfigurations.develop , cfg.appConfigurations.localhost)
-};
+  appConfiguration: cfg.appConfigurations.localhost
+});
 
 var _productionEnvironment = {
   name: 'production',
@@ -46,31 +44,38 @@ var _productionEnvironment = {
   appConfiguration: cfg.appConfigurations.production
 };
 
-
 var environment = _.assign({}, _devEnvironment);
+
+var npmReferences = _.map(cfg.npmLibraries, function (l) {
+  var pkgFile = require('./node_modules/' + l + '/package.json');
+  return {
+    name: l,
+    mainFilePath: './node_modules/' + l + '/' + pkgFile.main
+  };
+});
+console.log(_.map(npmReferences, 'mainFilePath'));
+console.log('scripts: ', _.map(npmReferences, 'name'));
 
 gulp.task('clean', function () {
   return del([environment.root]);
 });
 
 gulp.task('libraries', function () {
-  return Promise.all(_.map(cfg.bowerLibraryFilePaths, function (path) {
-    return gulputil.pIsFileAvaliable(path).then(function (isAvaliable) {
-      return {
-        filePath: path,
-        isAvaliable: isAvaliable
-      };
-    });
-  })).then(function (results) {
-    _.forEach(results, function (r) {
-      if (!r.isAvaliable) { console.error('Cannot find library file at: ' + r.filePath); }
-    });
-  }).then(function () {
-    return gulp.src(cfg.bowerLibraryFilePaths)
-      .pipe(uglify())
-      .pipe(concat(environment.libFilename))
-      .pipe(gulp.dest(environment.root + cfg.dir.type.destination.js));
-  });
+
+  var b = browserify({ entries: _.map(npmReferences, 'mainFilePath') });
+
+  _.forEach(npmReferences, function (r) { b.require(r.mainFilePath, {expose: r.name}); });
+
+  return b.transform(envify({NODE_ENV: environment.name === 'production' ? 'production' : 'development'}))
+    .transform({
+      global: true,
+      compress: environment.name === 'production',
+      mangle: environment.name === 'production',
+      sourcemap: false
+    }, 'uglifyify')
+    .bundle()
+    .pipe(source(environment.libFilename))
+    .pipe(gulp.dest(environment.root + cfg.dir.type.destination.js));
 });
 
 gulp.task('scripts', function () {
@@ -89,6 +94,7 @@ gulp.task('scripts', function () {
     .require(configStream, {expose: 'appconfiguration', basedir: './src/scripts'});
 
   return b.transform('babelify', {presets: ['react']})
+    .external(_.map(npmReferences, 'name'))
     .bundle()
     .on('error', function (err) {
       console.error(err.toString());
@@ -154,7 +160,8 @@ gulp.task('lint', function () {
         '_': true,
         'postal': true,
         'oboe': true,
-        'Promise': true
+        'Promise': true,
+        'process': true
       },
       env: {
         'commonjs': true
@@ -192,7 +199,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('build', function () {
-  runsequence('clean', 'lint', ['libraries', 'test', 'scripts', 'styles', 'views', 'resources']);
+  return runsequence('clean', 'lint', ['libraries', 'test', 'scripts', 'styles', 'views', 'resources']);
 });
 
 gulp.task('dev', function () {
