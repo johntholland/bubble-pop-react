@@ -53,8 +53,6 @@ var npmReferences = _.map(cfg.npmLibraries, function (l) {
     mainFilePath: './node_modules/' + l + '/' + pkgFile.main
   };
 });
-console.log(_.map(npmReferences, 'mainFilePath'));
-console.log('scripts: ', _.map(npmReferences, 'name'));
 
 gulp.task('clean', function () {
   return del([environment.root]);
