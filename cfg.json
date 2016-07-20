@@ -47,7 +47,7 @@
       "designServiceApi": "http://localhost:59517/api/"
     },
     "production": {
-      "authorizationApiUrl": "https://develop.auth.paragontruss.com/",
+      "authorizationApiUrl": "https://auth.paragontruss.com/",
       "sealingServerApiUrl": "https://sealingserver-production.azurewebsites.net/api/",
       "pdfReviewClientUrl": "https://pdfeditor.paragontruss.com/",
       "designServiceApi": "https://designservice-production.azurewebsites.net/api/"
