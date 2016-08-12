@@ -91,7 +91,10 @@ gulp.task('scripts', function () {
   }).exclude('appconfiguration')
     .require(configStream, {expose: 'appconfiguration', basedir: './src/scripts'});
 
-  return b.transform('babelify', {presets: ['react']})
+  return b.transform('babelify', {
+		presets: ['react'],
+		plugins: ["transform-object-rest-spread"]
+	})
     .external(_.map(npmReferences, 'name'))
     .bundle()
     .on('error', function (err) {
@@ -139,6 +142,7 @@ gulp.task('lint', function () {
         "ecmaVersion": 6,
         "sourceType": "module",
         "ecmaFeatures": {
+		  "experimentalObjectRestSpread": true,
           "jsx": true
         }
       },
