@@ -1,0 +1,252 @@
+.rc-tree
+  margin 0
+  padding 5px
+  li
+    padding 0
+    margin 0
+    list-style none
+    white-space nowrap
+    outline 0
+    &.drag-over
+      & > a[draggable]
+        background-color #316ac5
+        color white
+        border 1px #316ac5 solid
+        opacity 0.8
+    &.drag-over-gap-top
+      & > a[draggable]
+        border-top 2px blue solid
+    &.drag-over-gap-bottom
+      & > a[draggable]
+        border-bottom 2px blue solid
+    &.filter-node
+      & > a
+        color #a60000!important
+        font-weight bold!important
+    ul
+      margin 0
+      padding 0 0 0 18px
+    a
+      display inline-block
+      padding 1px 3px 0 0
+      margin 0
+      cursor pointer
+      height inherit
+      text-decoration none
+      vertical-align top
+      color #fff
+      -moz-user-select none
+      -khtml-user-select none
+      -webkit-user-select none
+      -ms-user-select none
+      user-select none
+      &:hover
+        color color-gold
+      &.rc-tree-node-selected
+        color color-gold
+    span
+      &.rc-tree-icon_loading
+        margin-right 2px
+        vertical-align top
+      &.rc-tree-switcher
+        margin-top 4px
+        position absolute
+        &.rc-tree-roots_open
+          background-position -93px -56px
+        &.rc-tree-roots_close
+          background-position -75px -56px
+        &.rc-tree-center_open
+          background-position -92px -18px
+        &.rc-tree-center_close
+          background-position -74px -18px
+        &.rc-tree-bottom_open
+          background-position -92px -36px
+        &.rc-tree-bottom_close
+          background-position -74px -36px
+        &.rc-tree-noline_open
+          background-image url(../assets/caret-down.svg)
+          cursor pointer
+        &.rc-tree-noline_close
+          background-image url(../assets/caret-right.svg)
+          cursor pointer
+        &.rc-tree-center_docu
+          background-position -56px -18px
+        &.rc-tree-bottom_docu
+          background-position -56px -36px
+        &.rc-tree-noline_docu
+          background none
+      &.rc-tree-checkbox
+        width 13px
+        height 13px
+        margin 0 3px
+        background-position 0 0
+        &.rc-tree-checkbox-checked
+          &.rc-tree-checkbox-disabled
+            background-position -14px -56px
+        &.rc-tree-checkbox-indeterminate
+          &.rc-tree-checkbox-disabled
+            position relative
+            background #ccc
+            border-radius 3px
+            &::after
+              content ' '
+              -webkit-transform scale(1)
+              transform scale(1)
+              position absolute
+              left 3px
+              top 5px
+              width 5px
+              height 0
+              border 2px solid #fff
+              border-top 0
+              border-left 0
+      &.rc-tree-checkbox-checked
+        background-position -14px 0
+      &.rc-tree-checkbox-indeterminate
+        background-position -14px -28px
+      &.rc-tree-checkbox-disabled
+        background-position 0 -56px
+
+.rc-tree li a[draggable],
+.rc-tree li a[draggable="true"]
+  color #333
+  -moz-user-select none
+  -khtml-user-select none
+  -webkit-user-select none
+  -ms-user-select none
+  user-select none
+  -khtml-user-drag element
+  -webkit-user-drag element
+
+.rc-tree li span.rc-tree-switcher,
+.rc-tree li span.rc-tree-checkbox,
+.rc-tree li span.rc-tree-iconEle
+  line-height 16px
+  margin-right 2px
+  width 16px
+  height 16px
+  display inline-block
+  vertical-align middle
+  border 0 none
+  cursor default
+  outline none
+  background-color transparent
+  background-repeat no-repeat
+  background-attachment scroll
+  background-size contain
+.rc-tree-child-tree
+  display none
+
+.rc-tree-child-tree-open
+  display block
+
+.rc-tree-treenode-disabled > span,
+.rc-tree-treenode-disabled > a,
+.rc-tree-treenode-disabled > a span
+  color #ccc
+  cursor not-allowed
+
+.rc-tree-icon__open
+  margin-right 2px
+  background-position -110px -16px
+  vertical-align top
+
+.rc-tree-icon__close
+  margin-right 2px
+  background-position -110px 0
+  vertical-align top
+
+.rc-tree-wrap-text
+  position relative
+  a
+    span
+      white-space normal
+      margin 0 0 0 18px
+      -webkit-box-decoration-break clone
+      display inline-block
+      line-height 16px
+      font-weight bold
+  &.properties-panel, &.details-view
+    a
+      cursor default
+      &:hover
+        color #fff
+      &.rc-tree-node-selected
+        color #fff
+  &.check-fails
+    a
+      span
+        color color-check-fails
+  &.check-capacity-less-than-100
+    a
+      span
+        color color-check-capacity-100
+  &.check-capacity-less-than-90
+    a
+      span
+        color color-check-capacity-90
+  &.check-capacity-less-than-80
+    a
+      span
+        color color-check-capacity-80
+  &.check-capacity-less-than-70
+    a
+      span
+        color color-check-capacity-70
+  &.check-capacity-less-than-60
+    a
+      span
+        color color-check-capacity-60
+  &.check-capacity-less-than-50
+    a
+      span
+        color color-check-capacity-50
+  &.check-capacity-less-than-40
+    a
+      span
+        color color-check-capacity-40
+  &.check-capacity-less-than-30
+    a
+      span
+        color color-check-capacity-30
+  &.check-capacity-less-than-20
+    a
+      span
+        color color-check-capacity-20
+  &.check-capacity-less-than-10
+    a
+      span
+        color color-check-capacity-10
+  &.load-dead
+    a
+      span
+        color #a4d
+  &.load-exterior-wind
+    a
+      span
+        color #f00
+  &.load-interior-wind
+    a
+      span
+        color #0f0
+  &.load-construction
+    a
+      span
+        color #0ff
+  &.load-live
+    a
+      span
+        color #00f
+  &.load-default
+    a
+      span
+        color #fff
+
+.details-view
+  .rc-tree-wrap-text
+    a
+      cursor default
+      &:hover
+        color #fff
+      &.rc-tree-node-selected
+        color #fff

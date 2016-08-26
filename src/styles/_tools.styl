@@ -1,0 +1,38 @@
+.select-file
+  input.hidden
+    width .1px
+    height 0
+    overflow hidden
+    margin 0
+  label
+    @extend button
+    margin 0
+
+.scroll-box
+  position relative
+  width 100%
+  overflow hidden
+  .pocket
+    position relative
+    transition-property top
+    transition-duration 0.2s
+
+.await
+  //width 100%
+  width 38px
+  >.spinner
+    position relative
+    width 100%
+    //height primary-length * 4 px
+    height 38px
+    >.icon
+      position absolute
+      width 100%
+      height 100%
+      top 0
+      left 0
+      fill color-gray
+      transition-property opacity
+      transition-duration 2s
+      &.fade
+        opacity 0
