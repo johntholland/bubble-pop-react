@@ -59,7 +59,7 @@ function addCubes(scene)
             var cube = new T.Mesh(cubeGeometry, cubeMaterial);
 
             // position the cube
-            cube.position.x = (5 * column) - 11;
+            cube.position.x = (5 * column);
             cube.position.y = (5 * row);
             cube.position.z = 0;
             cube.IsPopped = false;
@@ -96,7 +96,32 @@ var Viewport = React.createClass({
     {
         addCubes(this.scene);
     },
-
+    applyInput: function (message)
+    {
+        var self = this;
+        var inputTypes = {
+            'camera/orbit': function ()
+            {
+                self.camera.applyOrbit(message.payload.x, message.payload.y);
+            },
+            'camera/pan': function ()
+            {
+                self.camera.applyPan(message.payload.x, message.payload.y);
+            },
+            'camera/dolly': function ()
+            {
+                self.camera.applyDolly(message.payload.z);
+            },
+            'select/click': function ()
+            {
+                console.log("clicked");
+            }
+        };
+        if (_.isFunction(inputTypes[message.type]))
+        {
+            inputTypes[message.type]();
+        }
+    },
     render: function ()
     {
         var self = this;
